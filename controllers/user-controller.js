@@ -85,3 +85,39 @@ export const register = async (req, res, next) => {
     return res.status(200).json({message: "login successsful"});
 };
 
+export const profile = async (req, res, next) => {
+    const {userId, fullName, email, phone, location, skills, experience, education, resume, linkedIn, github, portfolio } = req.body;
+
+    let existingProfile;
+    try {
+        existingProfile = await UserProfile.findOne({email});
+    } catch (err) {
+        return res.status(500).json({message: "error accessing database"});
+    }
+    if (existingProfile) {
+        return res.status(400).json({message: "profile already exists"});
+    }
+
+    const userProfile = new UserProfile({
+        userId,
+        fullName,
+        email,
+        phone,
+        location,
+        skills,
+        experience,
+        education,
+        resume,
+        linkedIn,
+        github,
+        portfolio
+    });
+
+    try {
+        await userProfile.save();
+    } catch (err) {
+        res.status(500).json({message: "error accessing database"});
+    }
+    res.status(201).json({userProfile});
+
+};
