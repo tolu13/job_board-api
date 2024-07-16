@@ -14,3 +14,26 @@ export const getAllJob = async (req, res, next) => {
     }
     return res.status(200).json({jobs});
 };
+
+export const createJob = async (req, res, next) => {
+    const {title, description, company, location, salary, requirements, responsibilities, datePosted} = req.body;
+
+    const job = new Job({
+        title,
+        description,
+        company,
+        location,
+        salary,
+        requirements,
+        responsibilities,
+        datePosted
+    });
+    try {
+        await job.save();
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({message: err})
+    }
+    return res.status(201).json({job})
+
+};
