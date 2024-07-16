@@ -140,3 +140,16 @@ export const updateUserProfile = async (req, res, next) => {
     }
     return res.status(200).json({ updateProfile });
 };
+
+export const getAllProfile = async (req, res, next) => {
+    let allProfiles;
+    try {
+      allProfiles = await UserProfile.find();
+    } catch (err) {
+        return res.status(500).json({message: "databse couldnt be accessed"});       
+    }
+    if (!allProfiles) {
+        return res.status(404).json({message: "No Profiles found"});
+    }
+    return res.status(200).json({ allProfiles });
+};
