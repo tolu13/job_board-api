@@ -81,3 +81,19 @@ export const applyJob = async (req, res, next) => {
     }
     res.status(201).json({message: "Application submitted succesfully"});
 };
+
+export const getJobApplications = async (req, res, next) => {
+    const jobId = req.params.job_id;
+    let job;
+    try {
+        job = await Job.findById(jobId).populate('applications').exec();
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({message: "Internal server error"});
+    }
+    if (!job) {
+        return res.status(404).json({message: "Job not found"});
+    }
+    const applications = job.applications;
+    return res.status(200).json({applications});
+};
