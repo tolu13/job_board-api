@@ -17,7 +17,7 @@ export const getAllJob = async (req, res, next) => {
 
 export const createJob = async (req, res, next) => {
     const {title, description, company, location, salary, requirements, responsibilities, datePosted} = req.body;
-
+    
     const job = new Job({
         title,
         description,
@@ -36,4 +36,19 @@ export const createJob = async (req, res, next) => {
     }
     return res.status(201).json({job})
 
+};
+
+export const getJobId = async (req, res, next) => {
+    const jobId = req.params.job_id;
+
+    let job;
+    try {
+        job = await Job.findById(jobId);
+    } catch (err) {
+        return console.log(err);
+    }
+    if (!job) {
+        return res.status(404).json({message: "No Job found"});
+    }
+    return res.status(200).json({job})
 };
