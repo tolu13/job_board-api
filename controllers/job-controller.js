@@ -97,3 +97,18 @@ export const getJobApplications = async (req, res, next) => {
     const applications = job.applications;
     return res.status(200).json({applications});
 };
+
+export const deleteJob = async (req, res, next) => {
+    const jobId = req.params.job_id;
+
+    let job;
+    try {
+        job = await Job.findByIdAndDelete(jobId);
+    } catch (err) {
+        res.status(500).json({message: 'Server error'});
+    }
+    if (!job) {
+        return res.status(404).json({message: 'Job not found'});
+    }
+    return res.status(201).json({message: 'Job successfully deleted'});
+};
