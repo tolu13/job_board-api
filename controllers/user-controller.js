@@ -64,3 +64,24 @@ export const register = async (req, res, next) => {
   return res.status(201).json({message: "User created succesfully"});
    
   };
+
+  export const login = async (req, res, next) => {
+    const { email, password} = req.body;
+    let exisitingUser;
+    try {
+        exisitingUser = await User.findOne({ email });
+    } catch (err) {
+        return res.status(500).json({message: "error occured while querying database"});
+    }
+    if (!exisitingUser) {
+        return res.status(404).json({message: "Couldnt get A user By this email"});
+    }
+
+
+    const isPasswordCorrect = bcrypt.compareSync(password, exisitingUser.password);
+    if (!isPasswordCorrect) {
+        return res.status(400).json({message: "Incorrect Password"})
+    }
+    return res.status(200).json({message: "login successsful"});
+};
+
