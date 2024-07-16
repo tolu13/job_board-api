@@ -121,3 +121,22 @@ export const profile = async (req, res, next) => {
     res.status(201).json({userProfile});
 
 };
+
+export const updateUserProfile = async (req, res, next) => {
+    const { phone, location, skills, experience,  resume, portfolio } = req.body;
+    const profileId = req.params.id.trim();
+    let updateProfile
+    try {
+      updateProfile = await UserProfile.findOneAndUpdate(
+        { _id: profileId },
+            { phone, location, skills, experience, resume, portfolio },
+            { new: true, runValidators: true }
+    );
+    } catch (err) {
+        return res.status(500).json({message: "error accessing database"});
+    }
+    if (!updateProfile) {
+        return res.status(500).json({message: "unable to update profile"})
+    }
+    return res.status(200).json({ updateProfile });
+};
