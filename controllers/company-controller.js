@@ -28,3 +28,19 @@ export const createCompany = async (req, res, next) => {
     }
     return res.status(201).json({company});
 };
+
+export const getCompanyJobs = async (req, res, next) => {
+  const companyId = req.params.id;
+
+    let company;
+    try {
+      company = await findCompanyWithJobs(companyId);
+      
+      if (!company) {
+        return res.status(404).json({message: "company not found"});
+      }
+    } catch (err) {
+      res.status(500).json({message: "server error"})
+    }
+    return res.status(201).json({company});
+};
