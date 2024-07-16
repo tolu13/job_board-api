@@ -52,3 +52,32 @@ export const getJobId = async (req, res, next) => {
     }
     return res.status(200).json({job})
 };
+
+export const applyJob = async (req, res, next) => {
+    const jobId = req.params.job_id;
+    const { candidateName, email, resume, coverLetter} = req.body;
+
+    let job;
+    try {
+        job = await Job.findById(jobId);
+    } catch (err) {
+        return console.log(err);
+    }
+    if (!job) {
+        return res.status(404).json({message: "Job not found"});
+    }
+
+    job.applications.push({
+        candidateName,
+        email,
+        resume,
+        coverLetter
+    });
+
+    try {
+        await job.save();
+    } catch (err) {
+        res.status(500).json({message: "Unable to submit application"});
+    }
+    res.status(201).json({message: "Application submitted succesfully"});
+};
