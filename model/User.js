@@ -9,7 +9,7 @@ const userSchema = new Schema({
         minlength: 6,
         validate: {
             validator: function(v) {
-                return /^[a-zA\s]*$/.test(v)
+                return /^[a-zA-Z\s]*$/.test(v)
             },
             message: props => `${props.value} must contaion onlt letters and spaces`
         }
