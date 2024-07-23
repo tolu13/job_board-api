@@ -4,6 +4,10 @@ import UserProfile from "../model/Profile.js";
 import Company from "../model/Company.js";
 import Job from "../model/Job.js";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
  export const getAllUser = async (req, res, next) => {
     let users;
@@ -19,7 +23,7 @@ import mongoose from "mongoose";
 };
 
 export const register = async (req, res, next) => {
-    const { name, email, password, user_type, companyName, industry, description } = req.body;
+    const { name, email, password, user_type} = req.body;
   
       let exisitingUser;
       try {
@@ -45,44 +49,31 @@ export const register = async (req, res, next) => {
       } catch (error) {
           return res.status(400).json({message: "Check that your inputs are valid"});
       }
-      
-      if (user_type === 'company') {
-  
-         const newCompany = new Company({
-              user_id: mongoose.user.id,
-              name: companyName,
-              industry,
-              description
-          }); 
-      try {
-          await newCompany.save();
-      }catch (err) {
-         return console.log(err);
-      }
-      return res.status(201).json({user})
-  }  
-  return res.status(201).json({message: "User created succesfully"});
+    return res.status(201).json({message: "User created succesfully"});
    
-  };
+};
 
-  export const login = async (req, res, next) => {
+
+export const login = async (req, res, next) => {
+    const secretKey = process.env.JWT_SECRET;
     const { email, password} = req.body;
-    let exisitingUser;
+
+    let existingUser;
     try {
-        exisitingUser = await User.findOne({ email });
+        existingUser = await User.findOne({ email });
     } catch (err) {
         return res.status(500).json({message: "error occured while querying database"});
     }
-    if (!exisitingUser) {
+    if (!existingUser) {
         return res.status(404).json({message: "Couldnt get A user By this email"});
     }
 
-
-    const isPasswordCorrect = bcrypt.compareSync(password, exisitingUser.password);
+    const isPasswordCorrect = bcrypt.compareSync(password, existingUser.password);
     if (!isPasswordCorrect) {
         return res.status(400).json({message: "Incorrect Password"})
     }
-    return res.status(200).json({message: "login successsful"});
+    const token = jwt.sign({userId: existingUser._id}, secretKey, {expiresIn: '3h'});
+    return res.status(200).json({message: "login successsful",token});
 };
 
 export const profile = async (req, res, next) => {
@@ -152,4 +143,19 @@ export const getAllProfile = async (req, res, next) => {
         return res.status(404).json({message: "No Profiles found"});
     }
     return res.status(200).json({ allProfiles });
+};
+
+export const userProfileId = async (req, res, next) => {
+    const profileId = req.params.id;
+
+    let profile;
+    try {
+        profile = await UserProfile.findById(profileId);
+    } catch (err) {
+        return console.log(err);
+    }
+    if (!profile) {
+        return res.status(404).json({message: "No Job found"});
+    }
+    return res.status(200).json({profile})
 };
