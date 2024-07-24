@@ -11,7 +11,7 @@ const app = express();
 
 app.use(express.json());
 app.get('/', function (req, res) {
-    res.send('Welcome to Job Board API')
+    res.send('Welcome to Jobs Board API')
 })
 app.use("/api/user", router);
 app.use("/api", jobRouter);
