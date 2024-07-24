@@ -42,9 +42,10 @@ export const authenticateUser = async (req, res, next) => {
 
 
 export const restrictToCompany = async (req, res, next) => {
-   const userId = req.userData.userId;
+    const userId = req.userData.userId;
+
     try {
-        const user = await User.findOne(userId);
+        const user = await User.findById(userId);
         if (!user || user.user_type !== 'company') {
             return res.status(403).json({ message: "Forbidden, only companies can access this resource" });
         }
